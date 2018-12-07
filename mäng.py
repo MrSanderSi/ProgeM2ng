@@ -97,7 +97,7 @@ while run:
         fox.right = False
         fox.idle = False
 
-    elif keys[pygame.K_RIGHT] and fox.x < screenWidth - 30:
+    elif keys[pygame.K_RIGHT] and fox.x < screenWidth - fox.width:
         fox.x += fox.vel
         fox.left = False
         fox.right = True
