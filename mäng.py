@@ -27,6 +27,7 @@ class player(object):
         self.idle = True
         self.walkCount = 0
         self.idleCount = 0
+        self.hitbox = (self.x + 2, self.y + 5, 24, 30)
 
     def draw(self,win):
         if self.walkCount + 1 >= 30:
@@ -44,6 +45,8 @@ class player(object):
             if self.idle:
                 win.blit(idle[self.idleCount//10], (self.x,self.y))
                 self.idleCount += 1
+        self.hitbox = (self.x + 2, self.y + 5, 24, 30)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
 class projectile(object):
     def __init__(self,x,y,radius,color,facing):
@@ -56,17 +59,66 @@ class projectile(object):
     def draw(self,win):
         pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
 
-def redrawGameWindow():
-    global idleCount
-    global walkCount
+class enemy(object):
+    walkRight = [pygame.image.load(os.path.join('eagle', 'eagle-R.png')), pygame.image.load(os.path.join('eagle', 'eagle-R2.png')), pygame.image.load(os.path.join('eagle', 'eagle-R3.png')), pygame.image.load(os.path.join('eagle', 'eagle-R4.png'))]
+    walkLeft = [pygame.image.load(os.path.join('eagle', 'eagle-attack-1.png')), pygame.image.load(os.path.join('eagle', 'eagle-attack-2.png')), pygame.image.load(os.path.join('eagle', 'eagle-attack-3.png')), pygame.image.load(os.path.join('eagle', 'eagle-attack-4.png'))]
 
-    win.blit(bg, (0,0))
+
+    def __init__(self, x, y, width, height, end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [self.x, self.end]
+        self.walkCount = 0
+        self.vel = 3
+        self.hitbox = (self.x + 4, self.y + 10, 28, 25)
+
+    def draw(self, win):
+        self.move()
+        if self.walkCount + 1 >= 60:
+            self.walkCount = 0
+        if self.vel > 0:
+            win.blit(self.walkRight[self.walkCount // 15], (self.x, self.y))
+            self.walkCount += 1
+        else:
+            win.blit(self.walkLeft[self.walkCount // 15], (self.x, self.y))
+            self.walkCount += 1
+        self.hitbox = (self.x + 4, self.y + 10, 28, 25)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+
+    def move(self):
+        if self.vel > 0:
+            if self.x + self.vel < self.path[1]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        else:
+            if self.x - self.vel > self.path[0]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+
+    def hit(self):
+        print('hit')
+        pass
+
+
+def redrawGameWindow():
+
+    win.blit(bg, (0, 0))
     fox.draw(win)
+    eagle.draw(win)
     for bullet in bullets:
         bullet.draw(win)
+
     pygame.display.update()
 #MAINLOOP
 fox = player(200, 300, 32, 32)
+eagle = enemy(50, 300, 32, 32, 750)
 bullets = []
 run = True
 while run:
@@ -77,6 +129,10 @@ while run:
             run = False
 
     for bullet in bullets:
+        if bullet.y - bullet.radius < eagle.hitbox[1] + eagle.hitbox[3] and bullet.y + bullet.radius > eagle.hitbox[1]:
+            if bullet.x + bullet.radius > eagle.hitbox[0] and bullet.x - bullet.radius < eagle.hitbox[0] + eagle.hitbox[2]:
+                eagle.hit()
+                bullets.pop(bullets.index(bullet))
         if bullet.x < 800 and bullet.x > 0:
             bullet.x += bullet.vel
         else:
@@ -90,14 +146,14 @@ while run:
         else:
             facing = 1
         if len(bullets) < 1:
-            bullets.append(projectile(round(fox.x + fox.width//2), round(fox.y + fox.height//2), 2, (0,0,0), facing))
+            bullets.append(projectile(round(fox.x + fox.width//2), round(fox.y + fox.height//2), 2, (0, 0, 0), facing))
     if keys[pygame.K_LEFT] and fox.x > fox.vel:
         fox.x -= fox.vel
         fox.left = True
         fox.right = False
         fox.idle = False
 
-    elif keys[pygame.K_RIGHT] and fox.x < screenWidth - fox.width:
+    elif keys[pygame.K_RIGHT] and fox.x < screenWidth - 30:
         fox.x += fox.vel
         fox.left = False
         fox.right = True
