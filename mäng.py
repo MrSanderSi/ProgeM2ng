@@ -77,13 +77,13 @@ class enemy(object):
 
     def draw(self, win):
         self.move()
-        if self.walkCount + 1 >= 60:
+        if self.walkCount + 1 >= 15:
             self.walkCount = 0
         if self.vel > 0:
-            win.blit(self.walkRight[self.walkCount // 15], (self.x, self.y))
+            win.blit(self.walkRight[self.walkCount // 5], (self.x, self.y))
             self.walkCount += 1
         else:
-            win.blit(self.walkLeft[self.walkCount // 15], (self.x, self.y))
+            win.blit(self.walkLeft[self.walkCount // 5], (self.x, self.y))
             self.walkCount += 1
         self.hitbox = (self.x + 4, self.y + 10, 28, 25)
         pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
