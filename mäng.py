@@ -1,3 +1,4 @@
+from tileset import *
 import pygame
 import os
 pygame.init()
@@ -7,9 +8,8 @@ win = pygame.display.set_mode((screenWidth, screenHeight))
 pygame.display.set_caption("First Game")
 walkRight = [pygame.image.load(os.path.join('character', 'R1.png')) ,pygame.image.load(os.path.join('character', 'R2.png')) ,pygame.image.load(os.path.join('character', 'R3.png')) ,pygame.image.load(os.path.join('character', 'R4.png')) ,pygame.image.load(os.path.join('character', 'R5.png')) ,pygame.image.load(os.path.join('character', 'R6.png'))]
 walkLeft = [pygame.image.load(os.path.join('character', 'L1.png')) ,pygame.image.load(os.path.join('character', 'L2.png')) ,pygame.image.load(os.path.join('character', 'L3.png')) ,pygame.image.load(os.path.join('character', 'L4.png')) ,pygame.image.load(os.path.join('character', 'L5.png')) ,pygame.image.load(os.path.join('character', 'L6.png'))]
-#walkRight = [pygame.image.load('character/R1.png'),pygame.image.load('character/R2.png'),pygame.image.load('character/R3.png'),pygame.image.load('character/R4.png'),pygame.image.load('character/R5.png'),pygame.image.load('character/R6.png')]
-#walkLeft = [pygame.image.load('character/L1.png'),pygame.image.load('character/L2.png'),pygame.image.load('character/L3.png'),pygame.image.load('character/L4.png'),pygame.image.load('character/L5.png'),pygame.image.load('character/L6.png')]
 bg = pygame.image.load('background/back.png')
+fg = pygame.image.load('background/fg.png')
 idle = [pygame.image.load('character/idle1.png'),pygame.image.load('character/idle2.png'),pygame.image.load('character/idle3.png'),pygame.image.load('character/idle4.png'),pygame.image.load('character/idle5.png'),pygame.image.load('character/idle6.png'),]
 clock = pygame.time.Clock()
 
@@ -106,10 +106,9 @@ class enemy(object):
         print('hit')
         pass
 
-
 def redrawGameWindow():
-
     win.blit(bg, (0, 0))
+    win.blit(fg, (0, 332))
     fox.draw(win)
     eagle.draw(win)
     for bullet in bullets:
