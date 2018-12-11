@@ -12,7 +12,17 @@ bg = pygame.image.load('background/back.png')
 fg = pygame.image.load('background/fg.png')
 idle = [pygame.image.load('character/idle1.png'),pygame.image.load('character/idle2.png'),pygame.image.load('character/idle3.png'),pygame.image.load('character/idle4.png'),pygame.image.load('character/idle5.png'),pygame.image.load('character/idle6.png'),]
 clock = pygame.time.Clock()
+pilv1 = pygame.image.load('background/pilv1.png')
+pilv2 = pygame.image.load('background/pilv2.png')
 
+class cloud(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.vel = 1
+        self.right = True
+        self.left = False
+        
 class player(object):
     def __init__(self, x, y, width, height):
         self.x = x
@@ -113,20 +123,31 @@ def redrawGameWindow():
     eagle.draw(win)
     for bullet in bullets:
         bullet.draw(win)
+    for cloud in clouds:
+        cloud.draw(win)
 
     pygame.display.update()
 #MAINLOOP
 fox = player(200, 300, 32, 32)
 eagle = enemy(50, 300, 32, 32, 750)
 bullets = []
+clouds = []
 run = True
 while run:
     clock.tick(60)
-
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-
+    
+    for cloud in clouds:
+        if len(clouds) < 2:
+            clouds.append(pilv1) and clouds.append(pilv2)
+        if cloud.x < 800 and cloud.x > 0:
+            cloud.x += cloud.vel
+        else:
+            clouds.pop(clouds.index(cloud))
+            
     for bullet in bullets:
         if bullet.y - bullet.radius < eagle.hitbox[1] + eagle.hitbox[3] and bullet.y + bullet.radius > eagle.hitbox[1]:
             if bullet.x + bullet.radius > eagle.hitbox[0] and bullet.x - bullet.radius < eagle.hitbox[0] + eagle.hitbox[2]:
