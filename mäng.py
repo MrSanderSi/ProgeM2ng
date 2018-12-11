@@ -2,6 +2,7 @@ from tileset import *
 import pygame
 import os
 pygame.init()
+pygame.mixer.init()
 screenWidth = 800
 screenHeight = 500
 win = pygame.display.set_mode((screenWidth, screenHeight))
@@ -13,8 +14,7 @@ fg = pygame.image.load('background/fg.png')
 idle = [pygame.image.load('character/idle1.png'),pygame.image.load('character/idle2.png'),pygame.image.load('character/idle3.png'),pygame.image.load('character/idle4.png'),pygame.image.load('character/idle5.png'),pygame.image.load('character/idle6.png'),]
 clock = pygame.time.Clock()
 pilv1 = pygame.image.load('background/pilv1.png')
-pilv2 = pygame.image.load('background/pilv2.png')
-
+pilv2 = pygame.image.load('background/pilv2.png') 
 class cloud(object):
     def __init__(self, x, y):
         self.x = x
@@ -129,6 +129,11 @@ def redrawGameWindow():
         cloud.draw(win)
 
     pygame.display.update()
+#LOAD GAME SOUNDS
+background_sound = pygame.mixer.Sound(os.path.join('sound', 'Slight_Breeze.wav'))
+
+
+
 #MAINLOOP
 fox = player(200, 300, 32, 32)
 eagle = enemy(50, 300, 32, 32, 750)
@@ -137,6 +142,7 @@ clouds = []
 run = True
 while run:
     clock.tick(60)
+    background_sound.play
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
