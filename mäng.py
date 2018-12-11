@@ -1,6 +1,7 @@
 from tileset import *
 import pygame
 import os
+from os import path
 pygame.init()
 pygame.mixer.init()
 screenWidth = 800
@@ -14,7 +15,7 @@ fg = pygame.image.load('background/fg.png')
 idle = [pygame.image.load('character/idle1.png'),pygame.image.load('character/idle2.png'),pygame.image.load('character/idle3.png'),pygame.image.load('character/idle4.png'),pygame.image.load('character/idle5.png'),pygame.image.load('character/idle6.png'),]
 clock = pygame.time.Clock()
 pilv1 = pygame.image.load('background/pilv1.png')
-pilv2 = pygame.image.load('background/pilv2.png') 
+pilv2 = pygame.image.load('background/pilv2.png')
 class cloud(object):
     def __init__(self, x, y):
         self.x = x
@@ -130,7 +131,7 @@ def redrawGameWindow():
 
     pygame.display.update()
 #LOAD GAME SOUNDS
-background_sound = pygame.mixer.Sound(os.path.join('sound', 'Slight_Breeze.wav'))
+background_sound = pygame.mixer.Sound(path.join('sound', 'Slight_Breeze.wav'))
 
 
 
@@ -139,11 +140,11 @@ fox = player(200, 300, 32, 32)
 eagle = enemy(50, 300, 32, 32, 750)
 bullets = []
 clouds = []
+pygame.mixer.music.load(path.join('sound', 'Slight_Breeze.wav'))
+pygame.mixer.music.play(loops = -1)
 run = True
 while run:
     clock.tick(60)
-    background_sound.play
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
