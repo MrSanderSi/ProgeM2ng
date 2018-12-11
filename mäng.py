@@ -119,6 +119,8 @@ class enemy(object):
 def redrawGameWindow():
     win.blit(bg, (0, 0))
     win.blit(fg, (0, 332))
+    win.blit(pilv1, (0, 0))
+    win.blit(pilv2, (450, 50))
     fox.draw(win)
     eagle.draw(win)
     for bullet in bullets:
@@ -141,10 +143,10 @@ while run:
             run = False
     
     for cloud in clouds:
-        if len(clouds) < 2:
-            clouds.append(pilv1) and clouds.append(pilv2)
         if cloud.x < 800 and cloud.x > 0:
-            cloud.x += cloud.vel
+            cloud.x += cloud.vel    
+        if len(clouds) < 2:
+            clouds.append(pilv1) or clouds.append(pilv2)
         else:
             clouds.pop(clouds.index(cloud))
             
