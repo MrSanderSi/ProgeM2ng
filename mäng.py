@@ -132,7 +132,8 @@ def redrawGameWindow():
     pygame.display.update()
 #LOAD GAME SOUNDS
 background_sound = pygame.mixer.Sound(path.join('sound', 'Slight_Breeze.wav'))
-
+hitSound = pygame.mixer.Sound(path.join('sound', 'hit.wav'))
+shootSound = pygame.mixer.Sound(path.join('sound', 'shot.wav'))
 
 
 #MAINLOOP
@@ -160,6 +161,7 @@ while run:
     for bullet in bullets:
         if bullet.y - bullet.radius < eagle.hitbox[1] + eagle.hitbox[3] and bullet.y + bullet.radius > eagle.hitbox[1]:
             if bullet.x + bullet.radius > eagle.hitbox[0] and bullet.x - bullet.radius < eagle.hitbox[0] + eagle.hitbox[2]:
+                hitSound.play()
                 eagle.hit()
                 bullets.pop(bullets.index(bullet))
         if bullet.x < 800 and bullet.x > 0:
@@ -170,6 +172,7 @@ while run:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_SPACE]:
+        shootSound.play()
         if fox.left:
             facing = -1
         else:
