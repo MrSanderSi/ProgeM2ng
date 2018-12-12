@@ -16,6 +16,14 @@ idle = [pygame.image.load('character/idle1.png'),pygame.image.load('character/id
 clock = pygame.time.Clock()
 pilv1 = pygame.image.load('background/pilv1.png')
 pilv2 = pygame.image.load('background/pilv2.png')
+
+#LOAD GAME SOUNDS
+background_sound = pygame.mixer.Sound(path.join('sound', 'Slight_Breeze.wav'))
+hitSound = pygame.mixer.Sound(path.join('sound', 'hit.wav'))
+shootSound = pygame.mixer.Sound(path.join('sound', 'shot.wav'))
+
+score = 0
+
 class cloud(object):
     def __init__(self, x, y):
         self.x = x
@@ -57,7 +65,26 @@ class player(object):
                 win.blit(idle[self.idleCount//10], (self.x,self.y))
                 self.idleCount += 1
         self.hitbox = (self.x + 2, self.y + 5, 24, 30)
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+
+    def hit(self):
+        self.isJump = False
+        self.jumpCount = 10
+        self.x = 60
+        self.y = 300
+        self.walkCount = 0
+        font1 = pygame.font.SysFont('comicsans', 100)
+        text = font1.render('Ya died', 1, (128, 0, 0))
+        win.blit(text, (400 - (text.get_width()/2), 250 - (text.get_height()/2)))
+        pygame.display.update()
+        i = 0
+        while i < 300:
+            pygame.time.delay(10)
+            i += 1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    i = 301
+                    pygame.quit()
 
 class projectile(object):
     def __init__(self,x,y,radius,color,facing):
@@ -85,19 +112,24 @@ class enemy(object):
         self.walkCount = 0
         self.vel = 3
         self.hitbox = (self.x + 4, self.y + 10, 28, 25)
+        self.health = 3
+        self.visible = True
 
     def draw(self, win):
         self.move()
-        if self.walkCount + 1 >= 15:
-            self.walkCount = 0
-        if self.vel > 0:
-            win.blit(self.walkRight[self.walkCount // 5], (self.x, self.y))
-            self.walkCount += 1
-        else:
-            win.blit(self.walkLeft[self.walkCount // 5], (self.x, self.y))
-            self.walkCount += 1
-        self.hitbox = (self.x + 4, self.y + 10, 28, 25)
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        if self.visible:
+            if self.walkCount + 1 >= 15:
+                self.walkCount = 0
+            if self.vel > 0:
+                win.blit(self.walkRight[self.walkCount // 5], (self.x, self.y))
+                self.walkCount += 1
+            else:
+                win.blit(self.walkLeft[self.walkCount // 5], (self.x, self.y))
+                self.walkCount += 1
+            pygame.draw.rect(win, (255, 0, 0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10))
+            pygame.draw.rect(win, (0, 255, 0), (self.hitbox[0], self.hitbox[1] - 20, 50 - (12.5 * (3 - self.health)), 10))
+            self.hitbox = (self.x + 4, self.y + 10, 28, 25)
+            #pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def move(self):
         if self.vel > 0:
@@ -113,7 +145,11 @@ class enemy(object):
                 self.vel = self.vel * -1
                 self.walkCount = 0
 
-    def hit(self):
+    def hit(self): #iga kord kui vastane pihta saab
+        if self.health > 0:
+            self.health -= 1
+        else:
+            self.visible = False
         print('hit')
         pass
 
@@ -122,6 +158,8 @@ def redrawGameWindow():
     win.blit(fg, (0, 332))
     win.blit(pilv1, (0, 0))
     win.blit(pilv2, (450, 50))
+    text = font.render('Score: ' + str(score), 1, (255, 0, 0))
+    win.blit(text, (680, 10))
     fox.draw(win)
     eagle.draw(win)
     for bullet in bullets:
@@ -130,25 +168,27 @@ def redrawGameWindow():
         cloud.draw(win)
 
     pygame.display.update()
-#LOAD GAME SOUNDS
-background_sound = pygame.mixer.Sound(path.join('sound', 'Slight_Breeze.wav'))
-hitSound = pygame.mixer.Sound(path.join('sound', 'hit.wav'))
-shootSound = pygame.mixer.Sound(path.join('sound', 'shot.wav'))
-
 
 #MAINLOOP
+font = pygame.font.SysFont('comicsans', 30, True, True)
 fox = player(200, 300, 32, 32)
 eagle = enemy(50, 300, 32, 32, 750)
 bullets = []
 clouds = []
 pygame.mixer.music.load(path.join('sound', 'Slight_Breeze.wav'))
-pygame.mixer.music.play(loops = -1)
+pygame.mixer.music.play(-1)
 run = True
 while run:
     clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
+    if eagle.visible == True:
+        if fox.hitbox[1] < eagle.hitbox[1] + eagle.hitbox[3] and fox.hitbox[1] + fox.hitbox[3] > eagle.hitbox[1]:
+            if fox.hitbox[0] + fox.hitbox[2] > eagle.hitbox[0] and fox.hitbox[0] < eagle.hitbox[0] + eagle.hitbox[2]:
+                fox.hit()
+                score -= 30
     
     for cloud in clouds:
         if cloud.x < 800 and cloud.x > 0:
@@ -159,10 +199,11 @@ while run:
             clouds.pop(clouds.index(cloud))
             
     for bullet in bullets:
-        if bullet.y - bullet.radius < eagle.hitbox[1] + eagle.hitbox[3] and bullet.y + bullet.radius > eagle.hitbox[1]:
+        if bullet.y - bullet.radius < eagle.hitbox[1] + eagle.hitbox[3] and bullet.y + bullet.radius > eagle.hitbox[1]: #collision kontroll
             if bullet.x + bullet.radius > eagle.hitbox[0] and bullet.x - bullet.radius < eagle.hitbox[0] + eagle.hitbox[2]:
                 hitSound.play()
                 eagle.hit()
+                score += 1
                 bullets.pop(bullets.index(bullet))
         if bullet.x < 800 and bullet.x > 0:
             bullet.x += bullet.vel
@@ -179,6 +220,7 @@ while run:
             facing = 1
         if len(bullets) < 1:
             bullets.append(projectile(round(fox.x + fox.width//2), round(fox.y + fox.height//2), 2, (0, 0, 0), facing))
+
     if keys[pygame.K_LEFT] and fox.x > fox.vel:
         fox.x -= fox.vel
         fox.left = True
