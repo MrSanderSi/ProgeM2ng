@@ -1,4 +1,4 @@
-from tileset import *
+
 import pygame
 import os
 import random
