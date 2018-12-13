@@ -1,6 +1,7 @@
 from tileset import *
 import pygame
 import os
+import random
 from os import path
 
 pygame.init()
@@ -155,6 +156,14 @@ def mäng():
                 pygame.draw.rect(win, (0, 255, 0),
                                  (self.hitbox[0], self.hitbox[1] - 20, 50 - (12.5 * (3 - self.health)), 10))
                 self.hitbox = (self.x + 4, self.y + 10, 28, 25)
+            if not self.visible:
+                self.x = random.randint(20, 770)
+                self.y = random.randint(240, 300)
+                self.visible = True
+                self.isAlive = True
+                self.health = 3
+                
+                    
                 # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
         def move(self):
@@ -200,7 +209,7 @@ def mäng():
     # MAINLOOP
     font = pygame.font.SysFont('comicsans', 30, True, True)
     fox = player(200, 300, 32, 32)
-    eagle = enemy(50, 300, 32, 32, 750)
+    eagle = enemy(10, 300, 32, 32, 770)
     bullets = []
     clouds = []
     pygame.mixer.music.load(path.join('sound', 'Slight_Breeze.wav'))
@@ -216,7 +225,7 @@ def mäng():
             if fox.hitbox[1] < eagle.hitbox[1] + eagle.hitbox[3] and fox.hitbox[1] + fox.hitbox[3] > eagle.hitbox[1]:
                 if fox.hitbox[0] + fox.hitbox[2] > eagle.hitbox[0] and fox.hitbox[0] < eagle.hitbox[0] + eagle.hitbox[2]:
                     fox.hit()
-                    score -= 30
+                    score -= 10
 
         for cloud in clouds:
             if cloud.x < 800 and cloud.x > 0:
