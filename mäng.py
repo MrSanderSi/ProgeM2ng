@@ -40,13 +40,6 @@ def mäng():
     score = 0
     play_again = 1
 
-    class cloud(object):
-        def __init__(self, x, y):
-            self.x = x
-            self.y = y
-            self.vel = 1
-            self.right = True
-            self.left = False
 
 
     class player(object):
@@ -200,9 +193,6 @@ def mäng():
         eagle.draw(win)
         for bullet in bullets:
             bullet.draw(win)
-        for cloud in clouds:
-            cloud.draw(win)
-
         pygame.display.update()
 
 
@@ -211,7 +201,6 @@ def mäng():
     fox = player(200, 300, 32, 32)
     eagle = enemy(10, 300, 32, 32, 770)
     bullets = []
-    clouds = []
     pygame.mixer.music.load(path.join('sound', 'Slight_Breeze.wav'))
     pygame.mixer.music.play(-1)
     run = True
@@ -226,14 +215,6 @@ def mäng():
                 if fox.hitbox[0] + fox.hitbox[2] > eagle.hitbox[0] and fox.hitbox[0] < eagle.hitbox[0] + eagle.hitbox[2]:
                     fox.hit()
                     score -= 10
-
-        for cloud in clouds:
-            if cloud.x < 800 and cloud.x > 0:
-                cloud.x += cloud.vel
-            if len(clouds) < 2:
-                clouds.append(pilv1) or clouds.append(pilv2)
-            else:
-                clouds.pop(clouds.index(cloud))
 
         for bullet in bullets:
             if bullet.y - bullet.radius < eagle.hitbox[1] + eagle.hitbox[3] and bullet.y + bullet.radius > eagle.hitbox[
