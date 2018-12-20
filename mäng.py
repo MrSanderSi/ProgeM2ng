@@ -84,7 +84,7 @@ def mäng():
             self.y = 300
             self.walkCount = 0
             font1 = pygame.font.SysFont('comicsans', 100)
-            text = font1.render('Ya died', 1, (128, 0, 0))
+            text = font1.render('You died', 1, (128, 0, 0))
             win.blit(text, (400 - (text.get_width() / 2), 250 - (text.get_height() / 2)))
             pygame.display.update()
             i = 0
